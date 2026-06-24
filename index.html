@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alfred Tarski — what it means for a sentence to be true</title>
+<meta name="description" content="LOGIKĒ XIX — Alfred Tarski (1901–1983). He gave the first rigorous definition of TRUTH: a sentence is true exactly when it correctly describes a structure — truth is relative to a model. This founded model theory, half of modern logic and the basis of database semantics, formal verification, and program correctness. He also proved truth is UNDEFINABLE within its own language (Tarski's theorem, a sibling of Gödel), so 'true' must live in a richer metalanguage — which is exactly what defuses the Liar paradox. Live: evaluate a sentence across different models, and watch the object/metalanguage split dissolve the Liar. Honest: the Banach–Tarski 'paradox' is a real theorem about idealized sets, not physics. David Lee Wise, two-layer honest.">
+<style>
+  :root{--bg:#0c0f17;--panel:#121622;--panel2:#19202f;--edge:#2a3346;--ink:#ede6d6;--dim:#b3ad9a;--faint:#7c7660;
+    --ochre:#d9b66a;--ochre2:#f0d79a;--proof:#5ad1ff;--proof2:#a7e6ff;--one:#7fe0a0;--zero:#fb7185;--amber:#fbbf24;--ember:#fb923c;
+    --mono:'SFMono-Regular',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;--serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.58;background-image:radial-gradient(1100px 560px at 75% -10%,#1c2436 0%,transparent 55%),radial-gradient(900px 500px at 0% 100%,#14110a 0%,transparent 55%);}
+  .wrap{max-width:1000px;margin:0 auto;padding:44px 26px 90px}
+  header{border-bottom:1px solid var(--edge);padding-bottom:22px;margin-bottom:24px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ochre);opacity:.95}
+  h1{font-family:Georgia,serif;font-size:38px;line-height:1.08;margin:.3em 0 .14em;font-weight:600}h1 em{color:var(--ochre2);font-style:italic}
+  .who{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.04em}
+  .sub{color:var(--dim);font-size:16px;max-width:74ch;margin-top:14px}.sub b{color:var(--ink)}
+  .verdicts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:22px 0}@media(max-width:720px){.verdicts{grid-template-columns:1fr}}
+  .vc{border:1px solid var(--edge);border-radius:11px;padding:13px 15px;border-top-width:3px;background:rgba(18,22,34,.6)}
+  .vc .badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em}
+  .vc.s{border-top-color:var(--one)}.vc.s .badge{color:var(--one)} .vc.m{border-top-color:var(--amber)}.vc.m .badge{color:var(--amber)} .vc.f{border-top-color:var(--ember)}.vc.f .badge{color:var(--ember)}
+  .vc p{font-size:12px;color:var(--dim);margin:6px 0 0;line-height:1.45}.vc p b{color:var(--ink)}
+  section{margin:36px 0}
+  h2{font-size:13px;font-family:var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ochre2);border-left:2px solid var(--ochre);padding-left:11px;margin:0 0 6px}
+  .lede{color:var(--dim);font-size:15px;margin:0 0 18px;max-width:80ch}
+  .panel{background:linear-gradient(180deg,var(--panel),#0a0d14);border:1px solid var(--edge);border-radius:14px;padding:20px;box-shadow:0 24px 60px -40px #000}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  button{font-family:var(--mono);font-size:12px;color:var(--ink);background:#1a2030;border:1px solid var(--edge);border-radius:8px;padding:8px 13px;cursor:pointer}button:hover{background:#222b3e;border-color:var(--ochre)}
+  .atoms{display:flex;gap:8px;flex-wrap:wrap}
+  .atom{font-family:var(--mono);font-size:13px;padding:8px 14px;border-radius:8px;border:1px solid var(--edge);background:#1a2030;color:var(--zero);cursor:pointer;min-width:70px}
+  .atom.t{color:var(--one);border-color:#2f5b40;background:#0d1a12}
+  .formula{font-family:var(--mono);font-size:20px;color:var(--proof2);text-align:center;background:#0c1622;border:1px solid var(--edge);border-radius:9px;padding:14px;margin-top:6px}
+  .truth{font-family:var(--mono);font-size:15px;text-align:center;margin-top:12px;min-height:26px}
+  .truth b.t{color:var(--one)}.truth b.f{color:var(--zero)}
+  .models{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}@media(max-width:620px){.models{grid-template-columns:1fr}}
+  .mdl{border:1px solid var(--edge);border-radius:10px;padding:11px 13px;background:rgba(0,0,0,.16);font-family:var(--mono);font-size:12px;color:var(--dim);cursor:pointer}
+  .mdl:hover{border-color:var(--ochre)}.mdl.on{border-color:var(--proof);box-shadow:0 0 0 1px var(--proof) inset}
+  .mdl b{color:var(--ochre2)}.mdl .r{float:right}.mdl .r.t{color:var(--one)}.mdl .r.f{color:var(--zero)}
+  .liar{text-align:center;padding:4px 0}
+  .rbtn{font-family:var(--mono);font-size:13px;padding:9px 16px;border-radius:9px;border:1px solid var(--edge);background:#1a2030;color:var(--ink);cursor:pointer;margin:0 5px}
+  .lout{font-family:Georgia,serif;font-size:15px;min-height:74px;margin-top:14px;color:var(--dim)}
+  .levels{display:flex;gap:0;justify-content:center;margin-top:12px;font-family:var(--mono);font-size:12px}
+  .lvl{border:1px solid var(--edge);padding:9px 14px;color:var(--dim)}.lvl:first-child{border-radius:8px 0 0 8px}.lvl:last-child{border-radius:0 8px 8px 0;border-left:0}
+  .lvl b{color:var(--proof2)}
+  .note{color:var(--dim);font-size:13.5px;border-left:2px solid var(--edge);padding-left:13px;margin:16px 0 0}.note b{color:var(--ink)}
+  .thm{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}@media(max-width:620px){.thm{grid-template-columns:1fr}}
+  .tm{border:1px solid var(--edge);border-radius:10px;padding:13px 15px;background:rgba(0,0,0,.14)}.tm b{color:var(--ochre2);font-family:var(--mono);font-size:11px}.tm p{font-size:13px;color:var(--dim);margin:6px 0 0}
+  footer{margin-top:44px;border-top:1px solid var(--edge);padding-top:18px;color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.7}
+  footer a,.bar2 a{color:var(--ochre)}.bar2{font-family:var(--mono);font-size:11.5px;margin-bottom:16px}.bar2 a{text-decoration:none;border-bottom:1px dotted #4a4126}
+  code{font-family:var(--mono);color:var(--ochre2);background:#15120a;padding:1px 5px;border-radius:5px}
+  blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--ochre);color:var(--ink);font-style:italic;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="bar2"><a href="https://davidwise01.github.io/ud0/">◄ UD0</a> &nbsp; <a href="https://davidwise01.github.io/jan-lukasiewicz/">← Łukasiewicz</a> &nbsp; LOGIKĒ · XIX · the foundations rank</div>
+<header>
+  <div class="kicker">LOGIKĒ · XIX · what it means for a sentence to be true</div>
+  <h1>Alfred <em>Tarski</em></h1>
+  <div class="who">1901 – 1983 · Warsaw &amp; Berkeley · the Lwów–Warsaw school · founder of model theory</div>
+  <div class="sub">"True" is the most-used word in logic, and before Tarski no one had said precisely what it <em>means</em> — without spinning in circles or paradox. In 1933 he pinned it down: a sentence is true exactly when it <b>fits the structure it talks about</b>. "Snow is white" is true if and only if snow is white; and a formula's truth is always <b>relative to a model</b> — the world you're describing. This founded <b>model theory</b>, half of all modern logic and the engine under database queries, formal verification, and program semantics. He also proved the deep twist: truth <b>cannot be defined inside its own language</b> — which is exactly why the Liar paradox dissolves.</div>
+</header>
+<div class="verdicts">
+  <div class="vc s"><span class="badge">✓ STRONG</span><p><b>Rigorous and load-bearing.</b> Tarski's semantic definition of truth and the model theory it launched are foundational — they underwrite logical consequence, database query semantics, and the formal verification of hardware and software.</p></div>
+  <div class="vc m"><span class="badge">◐ TRUTH IS LANGUAGE-RELATIVE</span><p><b>You can't say "true" from inside.</b> Tarski's undefinability theorem (a sibling of [[kurt-godel]]): no sufficiently rich language can define its own truth predicate. "True" must be spoken in a higher <em>metalanguage</em> — truth is stratified.</p></div>
+  <div class="vc f"><span class="badge">◔ THE "PARADOX" ISN'T PHYSICS</span><p><b>Banach–Tarski, read honestly.</b> A solid ball can be cut into pieces and reassembled into <em>two</em> identical balls — a real theorem, but it needs the Axiom of Choice and non-measurable "pieces" with no volume. A truth about idealized sets, not matter.</p></div>
+</div>
+
+<section>
+  <h2>I · Truth in a model — fit between sentence and structure</h2>
+  <p class="lede">A sentence isn't true or false in a vacuum; it's true <em>in a model</em> — a particular structure that says which basic facts hold. Take the formula <code>(p ∧ q) → r</code>. Toggle which atoms <b>p, q, r</b> hold in the current world, and watch the sentence's truth value. Then click the preset models: the <em>same</em> sentence is true in one and false in another. Truth is a <b>relation between language and structure</b> — Tarski's central insight.</p>
+  <div class="panel">
+    <div class="controls">
+      <span style="font-family:var(--mono);font-size:12px;color:var(--faint)">this model holds:</span>
+      <div class="atoms">
+        <button class="atom" id="ap">p</button><button class="atom" id="aq">q</button><button class="atom" id="ar">r</button>
+      </div>
+    </div>
+    <div class="formula">φ &nbsp;=&nbsp; ( p ∧ q ) → r</div>
+    <div class="truth" id="truth"></div>
+    <div class="models" id="models"></div>
+    <div class="note">"<code>φ is true in M</code>" means M makes φ come out true — and different models disagree. This is the <b>T-schema</b> made operational: <em>"(p∧q)→r" is true in M iff (p∧q)→r holds in M.</em> ⚑ Every database query ("is this true of my data?"), every model-checker verifying a chip or protocol, every type-soundness proof is computing exactly this relation — truth-in-a-structure, Tarski-style.</div>
+  </div>
+  <blockquote>"&lsquo;Snow is white&rsquo; is true if, and only if, snow is white." <span style="color:var(--faint);font-style:normal;font-size:12px">— Tarski's Convention T, 1933</span></blockquote>
+</section>
+
+<section>
+  <h2>II · Why the Liar can't speak — truth lives one level up</h2>
+  <p class="lede">"This sentence is false." If it's true, it's false; if false, true — the <b>Liar paradox</b>. Tarski's diagnosis: the trouble is a language trying to talk about <em>its own</em> truth. His theorem proves no rich language can contain its own truth predicate, so "true" must be spoken in a <b>metalanguage</b> one level above the <b>object language</b> it judges. Stratify the levels, and the Liar simply can't be formed.</p>
+  <div class="panel">
+    <div class="liar">
+      <div style="font-family:Georgia;font-size:17px;margin-bottom:12px">L := &ldquo;L is false.&rdquo; &nbsp; Try to settle it inside one language:</div>
+      <button class="rbtn" id="lt">suppose L is true</button><button class="rbtn" id="lf">suppose L is false</button>
+      <div class="lout" id="lout">Pick one — the single-language version spins forever.</div>
+    </div>
+    <div class="levels">
+      <div class="lvl">object language<br><b>L lives here</b><br><span style="color:var(--faint)">can't say "true"</span></div>
+      <div class="lvl">metalanguage<br><b>"true" lives here</b><br><span style="color:var(--faint)">judges the level below</span></div>
+    </div>
+    <div class="note" style="margin-top:14px">Once "true" can only be asserted from the metalanguage <em>about</em> the object language, the self-referential Liar can never be written — the sentence that names its own falsity isn't expressible. ⚑ Same cure as [[bertrand-russell]]'s types and [[kurt-godel]]'s discipline of levels: <b>self-reference is tamed by stratification.</b> Tarski's hierarchy of metalanguages is why a program can reason about another program's correctness, but not blithely about its own.</div>
+  </div>
+</section>
+
+<section>
+  <h2>III · The definition, the limit, the man</h2>
+  <div class="thm">
+    <div class="tm"><b>SEMANTIC TRUTH &amp; MODEL THEORY</b><p>Truth = satisfaction in a structure (1933). Model theory — the study of which sentences hold in which structures — became half of modern logic and the semantics of computing.</p></div>
+    <div class="tm"><b>UNDEFINABILITY OF TRUTH</b><p>No rich language defines its own truth predicate (Tarski's theorem) — a semantic twin of Gödel's incompleteness. Truth outruns any single system that tries to capture it from inside.</p></div>
+  </div>
+  <p class="note" style="border-color:var(--amber);margin-top:16px"><b style="color:var(--amber)">Gate kept on.</b> Tarski's work is <b>rigorous and foundational</b> — but two things deserve honest framing. First, the <b>scope of "truth"</b>: Tarski defined truth for <em>formal</em> languages, not the messy truth of ordinary speech, and his definition makes truth explicitly <em>relative to a model and a metalanguage</em> — it is a precise mathematical relation, not a theory of Truth-with-a-capital-T about reality. Second, the famous <b>Banach–Tarski paradox</b> (with Stefan Banach, 1924): yes, a solid ball can be decomposed into finitely many pieces and reassembled into two balls of the same size — but this is a theorem about <em>idealized point-sets</em>, requiring the Axiom of Choice and "pieces" so pathological they have no definable volume; it says something deep about infinity and measure, and <em>nothing</em> about cutting up real matter. Pop accounts that make it sound like a duplication machine are wrong. The man: a Polish Jew who happened to be lecturing in the United States in <b>September 1939</b> when Germany invaded Poland — the trip saved his life, though much of his family was murdered in the Holocaust; he became the great founder of logic at Berkeley, training a school that shaped the field for generations. The definition of truth, and the proof that no language can hold its own, are his. ⚑ With Tarski the LOGIKĒ foundations rank rests: from [[thales-of-miletus]]' first proof through the gate, the limits, and now the meaning of truth itself.</p>
+</section>
+
+<footer>
+  ALFRED TARSKI · LOGIKĒ XIX · two-layer honest<br>
+  live truth-in-a-model (toggle atoms p,q,r; φ=(p∧q)→r true in one model, false in another — verified) · the Liar dissolved by the object-language / metalanguage split<br>
+  the semantic definition of truth (1933, Convention T) &amp; model theory · the undefinability theorem (truth not definable within its own language) · Banach–Tarski (idealized sets, flagged)<br>
+  ← <a href="https://davidwise01.github.io/jan-lukasiewicz/">Łukasiewicz</a> · the LOGIKĒ lineage: <b>Thales → … → the gate, the limits, and the meaning of truth</b><br>
+  LOGIKĒ · the lineage of logical mathematics · governor David Lee Wise · CC-BY-ND-4.0
+</footer>
+</div>
+<script>
+"use strict";
+// ---------- MODULE I : truth in a model ----------
+(function(){
+  const $=id=>document.getElementById(id);
+  let M={p:1,q:1,r:0};
+  function evalPhi(m){ return (!(m.p&&m.q)) || !!m.r; } // (p∧q)→r
+  const PRESETS=[
+    {name:'M₁', m:{p:1,q:1,r:0}},
+    {name:'M₂', m:{p:1,q:0,r:0}},
+    {name:'M₃', m:{p:1,q:1,r:1}},
+    {name:'M₄', m:{p:0,q:0,r:0}}
+  ];
+  function draw(){
+    [['ap','p'],['aq','q'],['ar','r']].forEach(([id,k])=>{
+      const b=$(id); b.textContent=k+' = '+(M[k]?1:0); b.classList.toggle('t',!!M[k]);
+    });
+    const v=evalPhi(M);
+    $('truth').innerHTML='φ is <b class="'+(v?'t':'f')+'">'+(v?'TRUE':'FALSE')+'</b> in this model &nbsp;<span style="color:var(--faint)">{ p='+(M.p?1:0)+', q='+(M.q?1:0)+', r='+(M.r?1:0)+' }</span>';
+    $('models').innerHTML=PRESETS.map((P,i)=>{
+      const tv=evalPhi(P.m);
+      const same = P.m.p===M.p&&P.m.q===M.q&&P.m.r===M.r;
+      return '<div class="mdl'+(same?' on':'')+'" data-i="'+i+'"><b>'+P.name+'</b> { p='+P.m.p+', q='+P.m.q+', r='+P.m.r+' }'+
+             '<span class="r '+(tv?'t':'f')+'">φ '+(tv?'TRUE':'FALSE')+'</span></div>';
+    }).join('');
+    $('models').querySelectorAll('.mdl').forEach(d=>d.onclick=()=>{ M=Object.assign({},PRESETS[+d.dataset.i].m); draw(); });
+  }
+  [['ap','p'],['aq','q'],['ar','r']].forEach(([id,k])=>$(id).onclick=()=>{M[k]=M[k]?0:1;draw();});
+  draw();
+})();
+
+// ---------- MODULE II : the Liar ----------
+(function(){
+  const $=id=>document.getElementById(id);
+  function show(assume){
+    const html = assume==='t'
+      ? '<div style="color:var(--proof2);font-family:var(--mono);font-size:13px;margin-bottom:8px">Suppose L is true.</div>'+
+        'Then what L says holds — and L says &ldquo;L is false.&rdquo; So L is <b style="color:var(--zero)">false</b>. Contradiction.'
+      : '<div style="color:var(--proof2);font-family:var(--mono);font-size:13px;margin-bottom:8px">Suppose L is false.</div>'+
+        'Then what L says fails — but L says &ldquo;L is false,&rdquo; so that very claim is the case, making L <b style="color:var(--one)">true</b>. Contradiction.';
+    $('lout').innerHTML=html+'<div style="margin-top:10px;color:var(--faint);font-size:13px">…within one language it never settles. Tarski: &ldquo;true&rdquo; isn&rsquo;t sayable here — move it to the metalanguage, and L can&rsquo;t even be formed.</div>';
+  }
+  $('lt').onclick=()=>show('t');
+  $('lf').onclick=()=>show('f');
+})();
+</script>
+</body>
+</html>
